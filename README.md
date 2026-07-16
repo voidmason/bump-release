@@ -76,8 +76,8 @@ unused.
 | `commit_note` | no       | Text appended to the bump commit message. Default empty.   |
 | `release`     | no       | Create a release for a final version tag. Default `true`.  |
 | `prerelease`  | no       | Publish beta tags as pre-releases too. Default `false`.    |
-| `name`        | no       | Committer name. Default `voidmason`.                           |
-| `email`       | no       | Committer email. Default `voidmason@users.noreply.github.com`. |
+| `name`        | no       | Committer name. Defaults to the token owner.               |
+| `email`       | no       | Committer email. Defaults to the owner's noreply address.  |
 
 ## Outputs
 
@@ -94,6 +94,11 @@ to the release branch, which is usually protected, and `GITHUB_TOKEN`
 `GITHUB_TOKEN` also does not trigger downstream workflows (tag-driven
 publishing, for example). Contents: read+write is enough; the same token
 creates the release, so the release is authored by the PAT owner.
+
+The bump commit and the tag are signed by the PAT owner too: the committer
+is resolved from the token via
+[voidmason/git-identity](https://github.com/voidmason/git-identity),
+unless an explicit `name`/`email` pair overrides it.
 
 ## If the release step fails
 

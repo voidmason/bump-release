@@ -25,13 +25,13 @@ inputs:
     required: false
     default: "false"
   name:
-    description: "Committer name for the bump commit and tag."
+    description: "Committer name for the bump commit and tag. Defaults to the identity resolved from the token."
     required: false
-    default: "voidmason"
+    default: ""
   email:
-    description: "Committer email for the bump commit and tag."
+    description: "Committer email for the bump commit and tag. Defaults to the identity resolved from the token."
     required: false
-    default: "voidmason@users.noreply.github.com"
+    default: ""
 
 outputs:
   version:
@@ -72,14 +72,21 @@ runs:
       with:
         tool: cargo-edit
 
+    - id: committer
+      uses: voidmason/git-identity@v1
+      with:
+        token: ${{ inputs.token }}
+        name: ${{ inputs.name }}
+        email: ${{ inputs.email }}
+
     # Inputs reach the shell only through env, never ${{ }} interpolation,
     # so a crafted input cannot inject into the run scripts.
     # GIT_CONFIG_GLOBAL/SYSTEM are pinned to /dev/null on every git step,
     # so runner-side config cannot leak into the commit or the pushes.
     - shell: bash
       env:
-        NAME: ${{ inputs.name }}
-        EMAIL: ${{ inputs.email }}
+        NAME: ${{ steps.committer.outputs.name }}
+        EMAIL: ${{ steps.committer.outputs.email }}
         GIT_CONFIG_GLOBAL: /dev/null
         GIT_CONFIG_SYSTEM: /dev/null
       run: |
