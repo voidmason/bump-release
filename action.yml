@@ -72,28 +72,17 @@ runs:
       with:
         tool: cargo-edit
 
-    - id: committer
-      uses: voidmason/git-identity@v1
+    - uses: voidmason/git-identity@v1
       with:
         token: ${{ inputs.token }}
         name: ${{ inputs.name }}
         email: ${{ inputs.email }}
+        setup: true
 
     # Inputs reach the shell only through env, never ${{ }} interpolation,
     # so a crafted input cannot inject into the run scripts.
     # GIT_CONFIG_GLOBAL/SYSTEM are pinned to /dev/null on every git step,
     # so runner-side config cannot leak into the commit or the pushes.
-    - shell: bash
-      env:
-        NAME: ${{ steps.committer.outputs.name }}
-        EMAIL: ${{ steps.committer.outputs.email }}
-        GIT_CONFIG_GLOBAL: /dev/null
-        GIT_CONFIG_SYSTEM: /dev/null
-      run: |
-        set -euo pipefail
-        git config user.name "$NAME"
-        git config user.email "$EMAIL"
-
     - id: ver
       shell: bash
       env:
