@@ -68,7 +68,7 @@ runs:
         persist-credentials: false
         fetch-depth: 0
 
-    - uses: taiki-e/install-action@v2.85.3
+    - uses: taiki-e/install-action@v2.85.8
       with:
         tool: cargo-edit
 
